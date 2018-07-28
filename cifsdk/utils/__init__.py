@@ -9,6 +9,14 @@ import yaml
 import os
 
 
+def settings(f):
+    if not os.path.exists(f):
+        return
+
+    with open(f, "r") as f:
+        return yaml.load(f)
+
+
 def read_config(args):
     options = {}
     if os.path.isfile(args.config):
