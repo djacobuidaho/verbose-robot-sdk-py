@@ -46,6 +46,11 @@ class DefaultHandler(websocket.WebSocket):
             pass
 
         from pprint import pprint
+
+        if message == 'ping':
+            self.handle.send('pong')
+            return
+
         pprint(message)
 
     def on_error(self, ws, error):
@@ -59,13 +64,11 @@ class DefaultHandler(websocket.WebSocket):
     def on_close(self, ws):
         logger.info(' ### CLOSED ###')
 
-    # https://github.com/tobiasfeistmantl/python-actioncable-zwei/blob/master/actioncable/subscription.py
-    # https://github.com/NullVoxPopuli/action_cable_client#the-action-cable-protocol
     def on_open(self, ws):
         pass
 
     def run(self):
-        self.handle.run_forever(ping_interval=5)
+        self.handle.run_forever()
 
 
 def main():
