@@ -41,7 +41,7 @@ class DefaultHandler(websocket.WebSocket):
         logger.debug(message)
 
         try:
-            message = json.loads(message)
+            message = json.loads(message.decode('utf-8'))
         except json.JSONDecodeError:
             pass
 
