@@ -59,7 +59,8 @@ setup(
     entry_points={
         'console_scripts': [
             'cif=cifsdk.cli:main',
-            'cif-tokens=cifsdk.tokens:main'
+            'cif-tokens=cifsdk.tokens:main',
+            'cif-firehose=cifsdk.client.ws:main'
         ]
     },
 )
