@@ -40,8 +40,11 @@ class DefaultHandler(websocket.WebSocket):
     def on_message(self, ws, message):
         logger.debug(message)
 
+        if isinstance(message, bytes):
+            message = message.decode('utf8')
+
         try:
-            message = json.loads(message.decode('utf-8'))
+            message = json.loads(message)
         except json.JSONDecodeError:
             pass
 
