@@ -17,8 +17,11 @@ REMOTE = os.getenv('CIF_REMOTE_WS', 'ws://localhost:5000/firehose')
 
 logger = logging.getLogger(__name__)
 
-logger.setLevel(logging.DEBUG)
-logging.getLogger('websocket').setLevel(logging.DEBUG)
+TRACE = os.environ.get('CIFSDK_CLIENT_WS_TRACE', '0')
+
+if TRACE == '1':
+    logger.setLevel(logging.DEBUG)
+    logging.getLogger('websocket').setLevel(logging.DEBUG)
 
 TOKEN = os.getenv('CIF_TOKEN')
 
@@ -48,13 +51,14 @@ class DefaultHandler(websocket.WebSocket):
         except json.JSONDecodeError:
             pass
 
-        from pprint import pprint
-
         if message == 'ping':
             self.handle.send('pong')
             return
 
-        pprint(message)
+        if logger.getEffectiveLevel() == logging.DEBUG:
+            print(json.dumps(message, indent=4, sort_keys=True, separators=(',', ': ')))
+        else:
+            print(json.dumps(message))
 
     def on_error(self, ws, error):
         if len(str(error)):
