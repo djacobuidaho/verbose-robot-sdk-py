@@ -22,6 +22,7 @@ TRACE = os.environ.get('CIFSDK_CLIENT_WS_TRACE', '0')
 if TRACE == '1':
     logger.setLevel(logging.DEBUG)
     logging.getLogger('websocket').setLevel(logging.DEBUG)
+    websocket.enableTrace(True)
 
 TOKEN = os.getenv('CIF_TOKEN')
 
@@ -53,6 +54,10 @@ class DefaultHandler(websocket.WebSocket):
 
         if message == 'ping':
             self.handle.send('pong')
+            return
+
+        if message == 'connected' and logger.getEffectiveLevel() == logging.DEBUG:
+            print('connected...')
             return
 
         if logger.getEffectiveLevel() == logging.DEBUG:
@@ -112,8 +117,6 @@ def main():
     logging.getLogger('').setLevel(loglevel)
     console.setFormatter(logging.Formatter(LOG_FORMAT))
     logging.getLogger('').addHandler(console)
-
-    websocket.enableTrace(True)
 
     h = MyHandler()
 
