@@ -8,7 +8,7 @@ from argparse import RawDescriptionHelpFormatter
 
 from cifsdk.constants import REMOTE_ADDR, CONFIG_PATH
 from cifsdk.utils import setup_logging, get_argument_parser, read_config
-from cifsdk.utils.zarrow import parse_timestamp
+from csirtg_indicator.utils.ztime import parse_timestamp
 from cifsdk.exceptions import AuthError
 from prettytable import PrettyTable
 import arrow
