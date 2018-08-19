@@ -27,6 +27,9 @@ omit =
     cifsdk/_version.py
     versioneer.py
     cifsdk/constants.py
+    cifsdk/cli.py
+    cifsdk/utils/color.py
+    cifsdk/tokens.py
 
 [html]
 directory = coverage_html_report
