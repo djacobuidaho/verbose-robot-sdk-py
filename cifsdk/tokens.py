@@ -66,7 +66,9 @@ def main():
     setup_logging(args)
     logger = logging.getLogger(__name__)
 
-    o = read_config(args)
+    o = {}
+    if os.path.isfile(args.config):
+        o = read_config(args)
     options = vars(args)
 
     if not options.get('token'):
