@@ -33,7 +33,7 @@ if sys.argv[-1] == 'test':
         raise RuntimeError('tests failed')
 
 setup(
-    name="verbose-robot-sdk-py",
+    name="cifsdk",
     version=versioneer.get_version(),
     cmdclass=versioneer.get_cmdclass(),
     description="CIFv4 Python SDK",
