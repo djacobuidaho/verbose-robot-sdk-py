@@ -233,9 +233,6 @@ def main():
     if args.ping or args.ping_indef:
         _ping(cli, args)
 
-    if options.get("submit"):
-        _submit(cli, args)
-
     filters = {
         'itype': options.get('itype'),
         'limit': options.get('limit'),
@@ -263,6 +260,9 @@ def main():
             filters[k] = 1
         if v is False:
             filters[k] = 0
+
+    if options.get("submit"):
+        _submit(cli, args, options)
 
     if options.get("delete"):
         _delete(cli, args, options, filters)
