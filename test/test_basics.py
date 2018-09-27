@@ -1,5 +1,4 @@
 import cifsdk
-import cif
 from cifsdk.client.http import HTTP as Client
 
 
