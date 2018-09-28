@@ -19,7 +19,9 @@ from cifsdk.constants import PYVERSION
 from csirtg_indicator import Indicator
 
 SNDTIMEO = os.getenv('ZMQ_SNDTIMEO', '30000')
+SNDTIMEO = int(SNDTIMEO)
 RCVTIMEO = os.getenv('ZMQ_RCVTIMEO', '30000')
+RCVTIMEO = int(RCVTIMEO)
 LINGER = 3
 ENCODING_DEFAULT = "utf-8"
 SEARCH_LIMIT = 100
@@ -44,8 +46,8 @@ class ZMQ(Client):
 
         self.context = zmq.Context().instance()
         self.socket = self.context.socket(zmq.REQ)
-        self.socket.RCVTIMEO = int(RCVTIMEO)
-        self.socket.SNDTIMEO = int(SNDTIMEO)
+        self.socket.RCVTIMEO = RCVTIMEO
+        self.socket.SNDTIMEO = SNDTIMEO
         self.socket.setsockopt(zmq.LINGER, LINGER)
         self.nowait = kwargs.get('nowait', False)
         if self.nowait:
