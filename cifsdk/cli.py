@@ -7,7 +7,7 @@ from argparse import ArgumentParser
 from argparse import RawDescriptionHelpFormatter
 
 from cifsdk.constants import REMOTE_ADDR, TOKEN, SEARCH_LIMIT, FORMAT, COLUMNS, ADVANCED
-from cifsdk.exceptions import AuthError
+from cifsdk.exceptions import AuthError, CIFBusy
 from csirtg_indicator.format import FORMATS
 from cifsdk.utils import setup_logging, get_argument_parser
 from csirtg_indicator import Indicator
@@ -65,11 +65,11 @@ logger = logging.getLogger(__name__)
 
 
 def _search(cli, args, options, filters):
-    if not filters.get('itype') and ADVANCED is False:
+    if not filters.get('indicator') and (not filters.get('itype') and ADVANCED is False):
         print('\nmissing --itype\n\n')
         raise SystemExit
 
-    if not filters.get('tags') and ADVANCED is False:
+    if not filters.get('indicator') and (not filters.get('tags') and ADVANCED is False):
         print('\nmissing --tags [phishing|malware|botnet|scanner|pdns|whitelist|...]\n\n')
         raise SystemExit
 
@@ -86,6 +86,12 @@ def _search(cli, args, options, filters):
 
     except AuthError as e:
         logger.error('unauthorized')
+
+    except CIFBusy as e:
+        print("\ncif-router is either too busy or requires a restart...")
+        print("if the problem continues, try increasing the amount of memory and cpus for the system")
+        print("\nhttps://github.com/csirtgadgets/verbose-robot/wiki/FAQ\nhttps://csirtg.io/support\n")
+        raise SystemExit
 
     except KeyboardInterrupt:
         pass
