@@ -113,8 +113,10 @@ def main():
                 'groups': list(groups),
                 'acl': acl
             })
+
         except AuthError as e:
             logger.error(e)
+
         except Exception as e:
             logger.error('token create failed: {}'.format(e))
         else:
@@ -174,6 +176,7 @@ def main():
                 logger.error('no tokens deleted')
         except Exception as e:
             logger.error('token delete failed: %s' % e)
+
     elif options.get('update'):
         if not options.get('groups'):
             raise RuntimeError('requires --groups')
@@ -203,6 +206,7 @@ def main():
             print(t)
         else:
             logger.error(rv)
+
     else:
         filters = {}
         if options.get('username'):
