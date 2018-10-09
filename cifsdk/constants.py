@@ -39,7 +39,11 @@ SEARCH_LIMIT = os.getenv('CIF_SEARCH_LIMIT', 500)
 TOKEN = os.getenv('CIF_TOKEN', None)
 FORMAT = os.getenv('CIF_FORMAT', 'table')
 
-ADVANCED = os.getenv('CIF_ADVANCED')
+ADVANCED = os.getenv('CIF_ADVANCED', False)
+if ADVANCED == '1':
+    ADVANCED = True
+else:
+    ADVANCED = False
 
 COLUMNS = os.getenv('CIFSDK_COLUMNS', COLUMNS)
 if not isinstance(COLUMNS, list):

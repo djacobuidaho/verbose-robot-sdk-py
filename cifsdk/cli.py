@@ -6,7 +6,7 @@ import textwrap
 from argparse import ArgumentParser
 from argparse import RawDescriptionHelpFormatter
 
-from cifsdk.constants import REMOTE_ADDR, TOKEN, SEARCH_LIMIT, FORMAT, COLUMNS
+from cifsdk.constants import REMOTE_ADDR, TOKEN, SEARCH_LIMIT, FORMAT, COLUMNS, ADVANCED
 from cifsdk.exceptions import AuthError
 from csirtg_indicator.format import FORMATS
 from cifsdk.utils import setup_logging, get_argument_parser
@@ -65,6 +65,14 @@ logger = logging.getLogger(__name__)
 
 
 def _search(cli, args, options, filters):
+    if not filters.get('itype') and ADVANCED is False:
+        print('\nmissing --itype\n\n')
+        raise SystemExit
+
+    if not filters.get('tags') and ADVANCED is False:
+        print('\nmissing --tags [phishing|malware|botnet|scanner|pdns|whitelist|...]\n\n')
+        raise SystemExit
+
     fmt = options.get('format')
     if args.profile:
         for k,v in PROFILES[args.profile].items():
