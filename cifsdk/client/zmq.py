@@ -1,9 +1,9 @@
-import time
 import json
 import logging
 import os
 import zlib
 from zmq.eventloop.ioloop import IOLoop
+from zmq.eventloop.zmqstream import ZMQStream
 from pprint import pprint
 
 try:
@@ -53,39 +53,39 @@ class ZMQ(Client):
         if self.nowait:
             self.socket = self.context.socket(zmq.DEALER)
 
-    def _handle_message_fireball(self, s, e):
+    def _handle_message_fireball(self, m):
         logger.debug('message received')
 
-        id, mtype, data = Msg().recv(s)
-
-        self.response.append(data)
+        self.response.append(m)
 
         self.num_responses -= 1
         logger.debug('num responses remaining: %i' % self.num_responses)
 
         if self.num_responses == 0:
             logger.debug('finishing up...')
+            self.stream.close()
+            self.socket.close()
             self.loop.stop()
 
     def _fireball_timeout(self):
-        logger.warn('timeout')
+        logger.info('fireball timeout')
         self.loop.stop()
-        raise TimeoutError('timeout')
 
-    def _send_fireball(self, mtype, data):
+    def _send_fireball(self, mtype, data, f_size):
         if len(data) < 3:
             logger.error('no data to send')
             return []
 
-        self.loop = IOLoop()
+        self.loop = IOLoop().instance()
         self.socket = self.context.socket(zmq.DEALER)
         self.socket.connect(self.remote)
 
-        timeout = time.time() + SNDTIMEO
-        self.loop.add_timeout(timeout, self._fireball_timeout)
-        self.response = []
+        self.stream = ZMQStream(self.socket)
+        self.stream.on_recv(self._handle_message_fireball)
 
-        self.loop.add_handler(self.socket, self._handle_message_fireball, zmq.POLLIN)
+        self.stream.io_loop.call_later(SNDTIMEO, self._fireball_timeout)
+
+        self.response = []
 
         if PYVERSION == 3:
             if isinstance(data, bytes):
@@ -96,17 +96,17 @@ class ZMQ(Client):
         if not isinstance(data, list):
             data = [data]
 
-        if (len(data) % FIREBALL_SIZE) == 0:
-            self.num_responses = int((len(data) / FIREBALL_SIZE))
+        if (len(data) % f_size) == 0:
+            self.num_responses = int((len(data) / f_size))
         else:
-            self.num_responses = int((len(data) / FIREBALL_SIZE)) + 1
+            self.num_responses = int((len(data) / f_size)) + 1
 
         logger.debug('responses expected: %i' % self.num_responses)
 
         batch = []
         for d in data:
             batch.append(d)
-            if len(batch) == FIREBALL_SIZE:
+            if len(batch) == f_size:
                 Msg(mtype=Msg.INDICATORS_CREATE, token=self.token, data=batch).send(self.socket)
                 batch = []
 
@@ -115,7 +115,6 @@ class ZMQ(Client):
 
         logger.debug("starting loop to receive")
         self.loop.start()
-        self.socket.close()
         return self.response
 
     def _recv(self, decode=True):
@@ -194,7 +193,7 @@ class ZMQ(Client):
     def stats_search(self, filters, decode=True):
         return self._send(Msg.STATS_SEARCH, json.dumps(filters), decode=decode)
 
-    def indicators_create(self, data, nowait=False, fireball=False):
+    def indicators_create(self, data, nowait=False, fireball=False, f_size=FIREBALL_SIZE):
         if isinstance(data, dict):
             data = self._kv_to_indicator(data)
 
@@ -203,7 +202,7 @@ class ZMQ(Client):
 
         if fireball:
             logger.info('using fireball mode')
-            return self._send_fireball(Msg.INDICATORS_CREATE, data)
+            return self._send_fireball(Msg.INDICATORS_CREATE, data, f_size)
 
         return self._send(Msg.INDICATORS_CREATE, data, nowait=nowait)
 
