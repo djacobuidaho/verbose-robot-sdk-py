@@ -41,10 +41,17 @@ if PYVERSION == 3:
 
 
 class ZMQ(Client):
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        self.socket.close()
+        self.context.term()
+
     def __init__(self, remote, token, **kwargs):
         super(ZMQ, self).__init__(remote, token)
 
-        self.context = zmq.Context().instance()
+        self.context = zmq.Context()
         self.socket = self.context.socket(zmq.REQ)
         self.socket.RCVTIMEO = RCVTIMEO
         self.socket.SNDTIMEO = SNDTIMEO
@@ -115,10 +122,13 @@ class ZMQ(Client):
 
         logger.debug("starting loop to receive")
         self.loop.start()
+        self.socket.close()
         return self.response
 
-    def _recv(self, decode=True):
+    def _recv(self, decode=True, close=True):
         mtype, data = Msg().recv(self.socket)
+        if close:
+            self.socket.close()
 
         if not decode:
             return data

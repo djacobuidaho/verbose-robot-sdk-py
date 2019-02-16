@@ -47,7 +47,7 @@ setup(
     keywords=['security'],
     author="Wes Young",
     author_email="wes@csirtgadgets.com",
-    packages=find_packages(),
+    packages=find_packages(exclude=("tests",)),
     install_requires=[
         'SQLAlchemy',
         'ujson',
