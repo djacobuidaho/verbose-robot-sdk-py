@@ -77,6 +77,7 @@ class ZMQ(Client):
     def _fireball_timeout(self):
         logger.info('fireball timeout')
         self.loop.stop()
+        self.socket.close()
 
     def _send_fireball(self, mtype, data, f_size):
         if len(data) < 3:
@@ -123,6 +124,7 @@ class ZMQ(Client):
         logger.debug("starting loop to receive")
         self.loop.start()
         self.socket.close()
+        self.stream.close()
         return self.response
 
     def _recv(self, decode=True, close=True):
@@ -178,9 +180,12 @@ class ZMQ(Client):
         Msg(mtype=mtype, token=self.token, data=data).send(self.socket)
 
         if self.nowait or nowait:
+            self.socket.close()
             return
 
-        return self._recv(decode=decode)
+        rv = self._recv(decode=decode)
+        self.socket.close()
+        return rv
 
     def ping(self):
         try:
