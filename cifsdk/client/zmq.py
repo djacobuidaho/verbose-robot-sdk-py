@@ -45,6 +45,17 @@ class ZMQ(Client):
         return self
 
     def __exit__(self, exc_type, exc_value, traceback):
+
+        # do our best to clean up potentially leaky FDs
+        if hasattr(self, 'stream') and not self.stream.closed():
+            self.stream.close()
+
+        if hasattr(self, 'loop'):
+            try:
+                self.loop.close()
+            except KeyError:
+                pass
+
         self.socket.close()
         self.context.term()
 
@@ -70,14 +81,11 @@ class ZMQ(Client):
 
         if self.num_responses == 0:
             logger.debug('finishing up...')
-            self.stream.close()
-            self.socket.close()
             self.loop.stop()
 
     def _fireball_timeout(self):
         logger.info('fireball timeout')
         self.loop.stop()
-        self.socket.close()
 
     def _send_fireball(self, mtype, data, f_size):
         if len(data) < 3:
@@ -85,6 +93,8 @@ class ZMQ(Client):
             return []
 
         self.loop = IOLoop().instance()
+        self.socket.close()
+
         self.socket = self.context.socket(zmq.DEALER)
         self.socket.connect(self.remote)
 
@@ -123,14 +133,15 @@ class ZMQ(Client):
 
         logger.debug("starting loop to receive")
         self.loop.start()
-        self.socket.close()
+
+        # clean up FDs
+        self.loop.close()
         self.stream.close()
+        self.socket.close()
         return self.response
 
-    def _recv(self, decode=True, close=True):
+    def _recv(self, decode=True):
         mtype, data = Msg().recv(self.socket)
-        if close:
-            self.socket.close()
 
         if not decode:
             return data
@@ -216,7 +227,6 @@ class ZMQ(Client):
             data = str(data)
 
         if fireball:
-            logger.info('using fireball mode')
             return self._send_fireball(Msg.INDICATORS_CREATE, data, f_size)
 
         return self._send(Msg.INDICATORS_CREATE, data, nowait=nowait)
