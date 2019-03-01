@@ -140,8 +140,10 @@ class ZMQ(Client):
         self.socket.close()
         return self.response
 
-    def _recv(self, decode=True):
+    def _recv(self, decode=True, close=True):
         mtype, data = Msg().recv(self.socket)
+        if close:
+            self.socket.close()
 
         if not decode:
             return data
@@ -195,7 +197,6 @@ class ZMQ(Client):
             return
 
         rv = self._recv(decode=decode)
-        self.socket.close()
         return rv
 
     def ping(self):
