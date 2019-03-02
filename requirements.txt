@@ -10,5 +10,6 @@ websocket-client>=0.44,<1
 # 5.x requires lxml updates
 tornado==4.5.3
 
+geoip2>=2.8,<2.9
 csirtgsdk==1.0.1
 csirtg_indicator>=2.0a4,<3.0
