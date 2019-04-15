@@ -71,6 +71,8 @@ class ZMQ(Client):
         if self.nowait:
             self.socket = self.context.socket(zmq.DEALER)
 
+        self.autoclose = kwargs.get('autoclose', True)
+
     def _handle_message_fireball(self, m):
         logger.debug('message received')
 
@@ -193,7 +195,8 @@ class ZMQ(Client):
         Msg(mtype=mtype, token=self.token, data=data).send(self.socket)
 
         if self.nowait or nowait:
-            self.socket.close()
+            if self.autoclose:
+                self.socket.close()
             return
 
         rv = self._recv(decode=decode)
