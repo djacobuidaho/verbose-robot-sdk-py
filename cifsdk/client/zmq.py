@@ -68,6 +68,7 @@ class ZMQ(Client):
         self.socket.SNDTIMEO = SNDTIMEO
         self.socket.setsockopt(zmq.LINGER, LINGER)
         self.nowait = kwargs.get('nowait', False)
+        self.autoclose = kwargs.get('autoclose', True)
         if self.nowait:
             self.socket = self.context.socket(zmq.DEALER)
 
