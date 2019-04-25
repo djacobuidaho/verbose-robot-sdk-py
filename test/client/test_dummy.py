@@ -12,4 +12,3 @@ def test_dummy():
     assert cli.indicators_create(data)
 
     assert cli.indicators_search(data)
-

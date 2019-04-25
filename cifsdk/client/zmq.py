@@ -75,6 +75,7 @@ class ZMQ(Client):
     def _handle_message_fireball(self, m):
         logger.debug('message received')
 
+        m = json.loads(m[2].decode('utf-8'))
         self.response.append(m)
 
         self.num_responses -= 1
