@@ -30,6 +30,7 @@ omit =
     cifsdk/cli.py
     cifsdk/utils/color.py
     cifsdk/tokens.py
+    cifsdk/exceptions.py
 
 [html]
 directory = coverage_html_report

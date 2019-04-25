@@ -185,7 +185,8 @@ class HTTP(Client):
 
         headers = {'Content-Type': 'application/json'}
         logger.debug('submitting')
-        resp = self.session.post(uri, data=data, verify=self.verify_ssl, headers=headers, timeout=self.timeout)
+        resp = self.session.post(uri, data=data, verify=self.verify_ssl,
+                                 headers=headers, timeout=self.timeout)
         logger.debug(resp.content)
         logger.debug(resp.status_code)
         n = RETRIES
@@ -203,7 +204,8 @@ class HTTP(Client):
             logger.info('retrying in %.00fs' % RETRIES_DELAY)
             sleep(RETRIES_DELAY)
 
-            resp = self.session.post(uri, data=data, verify=self.verify_ssl, headers=headers, timeout=self.timeout)
+            resp = self.session.post(uri, data=data, verify=self.verify_ssl,
+                                     headers=headers, timeout=self.timeout)
             if resp.status_code in [200, 201]:
                 break
 
