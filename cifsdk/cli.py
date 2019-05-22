@@ -102,8 +102,9 @@ def _search(cli, args, options, filters):
         logger.error(e)
 
     else:
-        for l in FORMATS[fmt](data=rv):
-            print(l.rstrip("\n"))
+
+        for l in FORMATS[fmt](data=sorted(rv, key=lambda i: i['reported_at']), cols=args.columns.split(',')):
+            print(l)
 
     raise SystemExit
 
