@@ -22,7 +22,8 @@ def test_msgs():
 def test_msgs_recv():
 
     def _recv_multipart():
-        m = Msg(id=msgpack.packb(1234), mtype=Msg.PING, token='token1234', data=[]).to_list()
+        m = Msg(id=msgpack.packb(1234), mtype=Msg.PING, token='token1234',
+                data=[]).to_list()
 
         return m
 

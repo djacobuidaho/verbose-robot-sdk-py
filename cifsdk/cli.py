@@ -154,7 +154,9 @@ def _ping(cli, args):
 
 def _submit(cli, args, options):
     print("submitting {0}".format(options.get("submit")))
-    i = Indicator(indicator=args.indicator, tags=args.tags, confidence=args.confidence)
+    i = Indicator(indicator=args.indicator, tags=args.tags,
+                  confidence=args.confidence)
+
     rv = cli.indicators_create(i)
 
     print('success id: {}\n'.format(rv))
