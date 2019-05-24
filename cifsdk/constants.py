@@ -29,7 +29,7 @@ if not os.path.isfile(CONFIG_PATH):
 # address stuff
 
 REMOTE_ADDR = 'http://localhost:5000'
-REMOTE_ADDR = os.getenv('CIF_REMOTE_ADDR', REMOTE_ADDR)
+REMOTE_ADDR = os.getenv('CIF_REMOTE', REMOTE_ADDR)
 
 ROUTER_ADDR = "ipc://{}".format(os.path.join(RUNTIME_PATH, 'router.ipc'))
 ROUTER_ADDR = os.getenv('CIF_ROUTER_ADDR', ROUTER_ADDR)
