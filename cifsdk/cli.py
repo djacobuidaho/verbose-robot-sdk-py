@@ -103,8 +103,7 @@ def _search(cli, args, options, filters):
 
     else:
 
-        for l in FORMATS[fmt](data=sorted(rv, key=lambda i: i['reported_at']), cols=args.columns.split(',')):
-            print(l)
+        print(FORMATS[fmt](data=sorted(rv, key=lambda i: i['reported_at'])))
 
     raise SystemExit
 
